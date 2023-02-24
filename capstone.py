@@ -3,6 +3,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import sessionmaker
 from argon2 import PasswordHasher
 import sys
+import re
 
 
 class Base(DeclarativeBase):
@@ -23,18 +24,42 @@ def create_user():
     Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
-    username = input("Enter username: ")
-    password = input("Enter password: ")
+
+    while True:
+        username = input("Enter username: ")
+        if len(username) < 1:
+            print("#" * 25 + "\nUsername cannot be empty.")
+            continue
+        existing_user = session.query(User).filter(User.username == username).first()
+        if existing_user is not None:
+            print("#" * 25 + "\nUsername already exists.")
+            continue
+        break
+    while True:
+        password = input("Enter password: ")
+        if len(password) < 8:
+            print("#" * 25 + "\nPassword must be at least 8 characters.")
+            continue
+        if not re.search("[A-Z]", password):
+            print("#" * 25 + "\nPassword must contain at least one uppercase letter.")
+            continue
+        if not re.search("[a-z]", password):
+            print("#" * 25 + "\nPassword must contain at least one lowercase letter.")
+            continue
+        if not re.search("[0-9]", password):
+            print("#" * 25 + "\nPassword must contain at least one number.")
+            continue
+        if not re.search("[!@#$%^&*(),.?:{}|<>]", password):
+            print("#" * 25 + "\nPassword must contain at least one special character.")
+            continue
+        break
+    
     hashed_password = ph.hash(password)
-    # password_hash = get_password_hash(password)
     user = User(username=username, hashed_password=hashed_password)
-    # user = User(username=username, password=password, hashed_password=hashed_password)
-    try:
-        session.add(user)
-        session.commit()
-        print("#" * 25 + "\nUser created successfully.")
-    except Exception:
-        print("#" * 25 + "\nDuplicate username found. Enter a unique username.")
+
+    session.add(user)
+    session.commit()
+    print("#" * 25 + "\nUser created successfully.")
     
 
 
