@@ -18,7 +18,6 @@ class User(Base):
 
 ph = PasswordHasher()
 
-# Creates user   // currently stores password in plain text
 def create_user():
     engine = create_engine('sqlite:///users.db')
     Base.metadata.create_all(engine)
@@ -61,7 +60,6 @@ def create_user():
     session.commit()
     print("#" * 25 + "\nUser created successfully.")
     
-
 
 #Test to query the database for all users
     # results = session.query(User).all()
