@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from argon2 import PasswordHasher
 import sys
 import re
+import os
 
 
 class Base(DeclarativeBase):
@@ -12,9 +13,10 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    username = Column(String(255), unique=True, nullable=False)
+    username = Column(String(256), unique=True, nullable=False)
     # password = Column(String(255), nullable=False)
-    hashed_password = Column(String, nullable=False)
+    salt = Column(String(16), nullable=False)
+    hashed_password = Column(String(256), nullable=False)
 
 ph = PasswordHasher()
 
@@ -52,19 +54,20 @@ def create_user():
             print("#" * 25 + "\nPassword must contain at least one special character.")
             continue
         break
-    
-    hashed_password = ph.hash(password)
-    user = User(username=username, hashed_password=hashed_password)
+
+    salt = str(os.urandom(16))
+    hashed_password = ph.hash(password + salt)
+    user = User(username=username, salt=salt, hashed_password=hashed_password)
 
     session.add(user)
     session.commit()
     print("#" * 25 + "\nUser created successfully.")
-    
+        
 
-#Test to query the database for all users
-    # results = session.query(User).all()
-    # for result in results:
-    #     print(result.username, result.hashed_password)
+    # test query
+    results = session.query(User).all()
+    for result in results:
+        print("username:", result.username, "hashed password:", result.hashed_password, "salt:", result.salt)
 
 def login_user():
     engine = create_engine('sqlite:///users.db')
@@ -75,7 +78,8 @@ def login_user():
 
     try:
         user = session.query(User).filter_by(username=username).first()
-        ph.verify(user.hashed_password, password)
+        salt = user.salt
+        ph.verify(user.hashed_password, password + salt)
     except Exception:
         print("#" * 25 + "\nInvalid username or password.")
     else:
@@ -93,11 +97,8 @@ def main():
             login_user()
             continue
         elif choice == '3':
-            print("#" * 25 + "\nGoodbye\n" + "#" * 25)
+            print("#" * 25 + "\nGoodbye")
             active = False
             sys.exit(0)
-            
-
+        
 main()
-
-
