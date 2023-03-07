@@ -65,9 +65,9 @@ def create_user():
         
 
     # test query
-    results = session.query(User).all()
-    for result in results:
-        print("username:", result.username, "hashed password:", result.hashed_password, "salt:", result.salt)
+    # results = session.query(User).all()
+    # for result in results:
+    #     print("username:", result.username, "salt:", result.salt, "hashed password:", result.hashed_password)
 
 def login_user():
     engine = create_engine('sqlite:///users.db')
@@ -100,5 +100,8 @@ def main():
             print("#" * 25 + "\nGoodbye")
             active = False
             sys.exit(0)
+        elif choice != '1' or choice != '2' or choice != '3':
+            print("#" * 25 + "\nEnter a valid option")
+            continue
         
 main()
