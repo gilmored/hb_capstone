@@ -14,4 +14,4 @@ If the user selects to create a new user, they’ll be prompted to to enter a us
 
 If the user selects to sign in, the user will be prompted to enter their credentials. If the credentials pass validation, they’re given a successful login message. Otherwise, the login fails. As I created this program as a learning experience, it runs on a loop until the user exits the program. 
 
-![gif walkthrough of usage](/cap_scratch/walkthrough.gif)
+![gif walkthrough of usage](/hb_capstone/walkthrough.gif)
