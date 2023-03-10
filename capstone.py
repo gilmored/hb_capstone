@@ -14,7 +14,6 @@ class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     username = Column(String(256), unique=True, nullable=False)
-    # password = Column(String(255), nullable=False)
     salt = Column(String(16), nullable=False)
     hashed_password = Column(String(256), nullable=False)
 
@@ -30,7 +29,7 @@ def create_user():
         username = input("Enter username: ")
         if len(username) < 1:
             print("#" * 25 + "\nUsername cannot be empty.")
-            continue
+            continue 
         existing_user = session.query(User).filter(User.username == username).first()
         if existing_user is not None:
             print("#" * 25 + "\nUsername already exists.")
@@ -67,7 +66,7 @@ def create_user():
     # test query
     # results = session.query(User).all()
     # for result in results:
-    #     print("username:", result.username, "salt:", result.salt, "hashed password:", result.hashed_password)
+    #     print("username:", result.username, "\n", "salt:", result.salt, "\n", "hashed password:", result.hashed_password, "\n")
 
 def login_user():
     engine = create_engine('sqlite:///users.db')
